@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="button" class="javax.swing.JButton">
+  	<property name="text" value="hello"/>
+  </bean>
+
+  <bean id="hookup1" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="button"/>
+    <property name="targetMethod" value="addActionListener"/>
+    <property name="arguments">
+    	<bean class="helloworld.HelloWorld">
+    		<property name="message" value="wassup"/>
+    	</bean>
+    </property>
+  </bean>
+
+  <!-- create top-level frame around presentation -->
+  <bean id="frame" class="javax.swing.JFrame" depends-on="hookup1">
+    <constructor-arg type="java.lang.String" value="Spring Swing App"/>
+    <property name="defaultCloseOperation">
+      <bean id="javax.swing.JFrame.EXIT_ON_CLOSE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+    </property>
+  </bean>
+
+  <bean id="addButton" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="frame"/>
+    <property name="targetMethod" value="add"/>
+    <property name="arguments" ref="button"/>
+  </bean>
+
+  <bean id="pack" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="addButton">
+    <property name="targetObject" ref="frame"/>
+    <property name="targetMethod" value="pack"/>
+  </bean>
+
+  <bean id="start" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="pack">
+    <property name="targetObject" ref="frame"/>
+    <property name="targetMethod" value="setVisible"/>
+    <property name="arguments" value="true"/>
+  </bean>
+
+</beans>
